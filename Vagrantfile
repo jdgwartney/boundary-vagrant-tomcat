@@ -11,7 +11,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
   # Every Vagrant virtual environment requires a box to build off of.
   config.vm.box = "puppetlabs/centos-6.5-64-puppet"
-  config.vm.hostname = "boundary-elasticsearch"
+  config.vm.hostname = "boundary-tomcat"
 
   #
   # Add the required puppet modules before provisioning is run by puppet
@@ -20,7 +20,8 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   config.vm.provision :shell do |shell|
      shell.inline = "sudo yum install -y git;
                      puppet module install puppetlabs/java;
-                     puppet module install elasticsearch-elasticsearch
+                     puppet module install puppetlabs-stdlib;
+                     puppet module install puppetlabs-tomcat;
                      [ ! -d /etc/puppet/modules/boundary ] && cd /etc/puppet/modules && git clone https://github.com/boundary/boundary_puppet boundary;
                      exit 0"
   end
@@ -34,7 +35,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   # Create a forwarded port mapping which allows access to a specific port
   # within the machine from a port on the host machine. In the example below,
   # accessing "localhost:8080" will access port 80 on the guest machine.
-  # config.vm.network "forwarded_port", guest: 80, host: 8080
+  config.vm.network "forwarded_port", guest: 9991, host: 10991
 
   # Create a private network, which allows host-only access to the machine
   # using a specific IP.
