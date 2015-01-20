@@ -3,10 +3,10 @@ Package {
   allow_virtual => false,
 }
 
-exec { 'update-packages':
-  command => '/usr/bin/yum update -y',
-  creates => '/vagrant/.locks/update-packages',
-}
+#exec { 'update-packages':
+#  command => '/usr/bin/yum update -y',
+#  creates => '/vagrant/.locks/update-packages',
+#}
 
 #
 # Add the GPG key to our system
@@ -40,9 +40,9 @@ exec { 'update-packages':
 #
 #node "boundary-elastic-search" {
 
-# class { 'boundary':
-#    token => 'api.a6df22c660-2105'
-#  }
+class { 'boundary':
+   token => '<key here>'
+}
 
 class { 'java':
   distribution => 'jdk',
@@ -62,7 +62,20 @@ class { 'tomcat': }
 tomcat::instance { 'test':
   source_url => 'http://mirror.symnds.com/software/Apache/tomcat/tomcat-7/v7.0.57/bin/apache-tomcat-7.0.57.tar.gz'
 }
-tomcat::service { 'default': }
+
+file { 'jmx':
+  path    => '/opt/apache-tomcat/bin/catalina.sh',
+  owner   => 'tomcat',
+  group   => 'tomcat',
+  mode    => '755',
+  ensure  => file,
+  source  => '/vagrant/manifests/catalina.sh',
+  require => [TOMCAT::INSTANCE['test']]
+}
+
+tomcat::service { 'default':
+  require => File['jmx']
+}
 
 
 
